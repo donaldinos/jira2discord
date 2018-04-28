@@ -88,7 +88,7 @@ var options = {
                     break;
                 case 'comment_created':
                     let comment
-                    if origiBody.comment.body.length > 1000 {
+                    if (origiBody.comment.body.length > 1000) {
                         comment = origiBody.comment.body.substring(0, 1000) + "..."
                     } else {
                         comment = origiBody.comment.body

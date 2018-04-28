@@ -1,6 +1,6 @@
 var express = require('express');
 var proxy = require('http-proxy-middleware');
-var bodyParser = require('body-parser');
+// var bodyParser = require('body-parser');
 var router = express.Router();
 
 // proxy middleware options
@@ -15,11 +15,8 @@ var proxy_options = {
         res.end('Something went wrong.' + err);
     },
     onProxyReq(proxyReq, req, res) {
-        console.log('======================')
-        console.log(req)
-        console.log('======================')
-        if (req.method == "POST" && req.body) {
-            let origiBody = req.body
+        if (req.method == "POST" && req.jsonBody) {
+            let origiBody = req.jsonBody
 
             console.log("--------------")
             console.log(origiBody)
@@ -152,7 +149,17 @@ var proxy = proxy(proxy_options);
 
 var app = express();
 // app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
+
+app.use(function(req, res, next) {
+    var data = "";
+    req.on('data', function(chunk) { data += chunk })
+    req.on('end', function() {
+        req.jsonBody = JSON.parse(data);
+        next();
+    })
+})
+
 
 app.use('/', proxy);
 

@@ -142,11 +142,11 @@ var proxy_options = {
             if (req.body) delete req.body;
 
             // Update header
-            proxyReq.setHeader('content-type', 'application/json');
+            //proxyReq.setHeader('content-type', 'application/json');
             // proxyReq.setHeader('content-length', body.length);
 
             // Write out body changes to the proxyReq stream
-            proxyReq.write(newBody);
+            proxyReq.write(JSON.stringify(newBody));
             proxyReq.end();
         }
     }

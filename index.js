@@ -7,6 +7,7 @@ var router = express.Router();
 var proxy_options = {
     target: 'https://discordapp.com/api/webhooks/439067758739587073/ha9l-06jomi48CxNVGz1r3up3V2ZZFPH-StZJ49x84Fkhokkqe7z_Wm4f8hznV9280qn', // target host
     changeOrigin: true,
+    logLevel: 'debug',
     onError(err, req, res) {
         res.writeHead(500, {
             'Content-Type': 'text/plain'
@@ -18,7 +19,7 @@ var proxy_options = {
             let origiBody = req.body
 
             console.log("--------------")
-                // console.log(origiBody)
+            console.log(origiBody)
 
             let newBody
             switch (origiBody.webhookEvent) {
@@ -132,10 +133,9 @@ var proxy_options = {
             if (req.body) delete req.body;
             if (req.query) delete req.query;
 
-            console.log(req)
-                // Update header
-                //proxyReq.setHeader('content-type', 'application/json');
-                // proxyReq.setHeader('content-length', body.length);
+            // Update header
+            //proxyReq.setHeader('content-type', 'application/json');
+            // proxyReq.setHeader('content-length', body.length);
 
             // Write out body changes to the proxyReq stream
             proxyReq.write(JSON.stringify(newBody));

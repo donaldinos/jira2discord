@@ -6,17 +6,6 @@ var router = express.Router();
 // proxy middleware options
 var proxy_options = {
     target: 'https://discordapp.com/api/webhooks/439067758739587073/ha9l-06jomi48CxNVGz1r3up3V2ZZFPH-StZJ49x84Fkhokkqe7z_Wm4f8hznV9280qn', // target host
-    // changeOrigin: true, // needed for virtual hosted sites
-    // ws: true,                         // proxy websockets
-    // pathRewrite: {
-    //     '^/api/old-path': '/api/new-path', // rewrite path
-    //     '^/api/remove/path': '/path' // remove base path
-    // },
-    // router: {
-    //     // when request.headers.host == 'dev.localhost:3000',
-    //     // override target 'http://www.example.org' to 'http://localhost:8000'
-    //     'dev.localhost:3000': 'http://localhost:8000'
-    // }
     onError(err, req, res) {
         res.writeHead(500, {
             'Content-Type': 'text/plain'
@@ -159,12 +148,7 @@ var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-/* GET home page. */
-router.get('/info', function(req, res, next) {
-    res.render('index', { title: 'JIRA 2 Discord Webhook Proxy' });
-});
-
-router.all('/', proxy);
+app.use('/', proxy);
 
 
 app.listen(80, '0.0.0.0', () => console.log("Bezi na: http://0.0.0.0:80"))

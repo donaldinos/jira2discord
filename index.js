@@ -17,7 +17,7 @@ var proxy_options = {
             let origiBody = req.body
 
             console.log("--------------")
-            console.log(origiBody)
+                // console.log(origiBody)
 
             let newBody
             switch (origiBody.webhookEvent) {
@@ -131,9 +131,10 @@ var proxy_options = {
             if (req.body) delete req.body;
             if (req.query) delete req.query;
 
-            // Update header
-            //proxyReq.setHeader('content-type', 'application/json');
-            // proxyReq.setHeader('content-length', body.length);
+            console.log(req)
+                // Update header
+                //proxyReq.setHeader('content-type', 'application/json');
+                // proxyReq.setHeader('content-length', body.length);
 
             // Write out body changes to the proxyReq stream
             proxyReq.write(JSON.stringify(newBody));

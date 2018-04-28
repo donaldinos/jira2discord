@@ -15,6 +15,9 @@ var proxy_options = {
         res.end('Something went wrong.' + err);
     },
     onProxyReq(proxyReq, req, res) {
+        console.log('======================')
+        console.log(req)
+        console.log('======================')
         if (req.method == "POST" && req.body) {
             let origiBody = req.body
 

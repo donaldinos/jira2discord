@@ -129,6 +129,7 @@ var proxy_options = {
 
             // Remove body-parser body object from the request
             if (req.body) delete req.body;
+            if (req.query) delete req.query;
 
             // Update header
             //proxyReq.setHeader('content-type', 'application/json');

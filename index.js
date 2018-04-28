@@ -6,7 +6,7 @@ var router = express.Router();
 // proxy middleware options
 var proxy_options = {
     target: 'https://discordapp.com/api/webhooks/439067758739587073/ha9l-06jomi48CxNVGz1r3up3V2ZZFPH-StZJ49x84Fkhokkqe7z_Wm4f8hznV9280qn', // target host
-    // changeOrigin: true,
+    changeOrigin: true,
     logLevel: 'debug',
     onError(err, req, res) {
         res.writeHead(500, {

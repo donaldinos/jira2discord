@@ -1,6 +1,6 @@
 var express = require('express');
 var proxy = require('http-proxy-middleware');
-// var bodyParser = require('body-parser');
+var bodyParser = require('body-parser');
 var router = express.Router();
 
 // proxy middleware options
@@ -152,7 +152,7 @@ var proxy = proxy(proxy_options);
 
 var app = express();
 // app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(bodyParser.json());
+app.use(bodyParser.json());
 
 app.use('/', proxy);
 

@@ -142,7 +142,7 @@ var options = {
             if (req.body) delete req.body;
 
             // Update header
-            proxyReq.setHeader('content-type', 'multipart/form-data');
+            proxyReq.setHeader('content-type', 'application/json');
             // proxyReq.setHeader('content-length', body.length);
 
             // Write out body changes to the proxyReq stream

@@ -3,9 +3,6 @@ var proxy = require('http-proxy-middleware');
 var bodyParser = require('body-parser');
 var router = express.Router();
 
-var proxy_filter = function(path, req) {
-    return path.match('^/') && (req.method === 'GET' || req.method === 'POST');
-};
 // proxy middleware options
 var proxy_options = {
     target: 'https://discordapp.com/api/webhooks/439067758739587073/ha9l-06jomi48CxNVGz1r3up3V2ZZFPH-StZJ49x84Fkhokkqe7z_Wm4f8hznV9280qn', // target host
@@ -156,7 +153,7 @@ var proxy_options = {
 };
 
 // create the proxy (without context)
-var proxy = proxy(proxy_filter, proxy_options);
+var proxy = proxy(proxy_options);
 
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));

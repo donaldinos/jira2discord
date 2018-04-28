@@ -136,18 +136,17 @@ var options = {
                     }
             }
 
+            console.log("--------------")
+
             // Remove body-parser body object from the request
             if (req.body) delete req.body;
 
-            // Make any needed POST parameter changes
-            let body = newBody;
-
             // Update header
             proxyReq.setHeader('content-type', 'multipart/form-data');
-            proxyReq.setHeader('content-length', body.length);
+            // proxyReq.setHeader('content-length', body.length);
 
             // Write out body changes to the proxyReq stream
-            proxyReq.write(body);
+            proxyReq.write(newBody);
             proxyReq.end();
         }
     }

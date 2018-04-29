@@ -22,8 +22,8 @@ var server = http.createServer(function(req, res) {
         console.log("--------------")
         console.log(body);
         console.log("--------------")
+        res.end('ok');
         proxy.web(req, res, { changeOrigin: true, target: 'https://discordapp.com/api/webhooks/439067758739587073/ha9l-06jomi48CxNVGz1r3up3V2ZZFPH-StZJ49x84Fkhokkqe7z_Wm4f8hznV9280qn' });
-        // res.end('ok');
     });
 });
 

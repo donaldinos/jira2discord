@@ -14,11 +14,17 @@ var proxy = httpProxy.createProxyServer({});
 var server = http.createServer(function(req, res) {
     // You can define here your custom logic to handle the request
     // and then proxy the request.
-    console.log("--------------")
-    console.log(req.body)
-    console.log("--------------")
-
-    proxy.web(req, res, { changeOrigin: true, target: 'https://discordapp.com/api/webhooks/439067758739587073/ha9l-06jomi48CxNVGz1r3up3V2ZZFPH-StZJ49x84Fkhokkqe7z_Wm4f8hznV9280qn' });
+    let body = '';
+    req.on('data', chunk => {
+        body += chunk.toString(); // convert Buffer to string
+    });
+    req.on('end', () => {
+        console.log("--------------")
+        console.log(body);
+        console.log("--------------")
+        proxy.web(req, res, { changeOrigin: true, target: 'https://discordapp.com/api/webhooks/439067758739587073/ha9l-06jomi48CxNVGz1r3up3V2ZZFPH-StZJ49x84Fkhokkqe7z_Wm4f8hznV9280qn' });
+        // res.end('ok');
+    });
 });
 
 console.log("listening on port 80")

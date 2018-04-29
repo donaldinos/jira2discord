@@ -101,6 +101,7 @@ function parseBody(body, callback) {
             }
             break;
         default:
+            console.log(body)
             newBody = {
                 "username": "Jira",
                 "avatar_url": "https://i.imgur.com/mdp3NY3.png",

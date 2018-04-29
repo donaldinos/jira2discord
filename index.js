@@ -8,7 +8,7 @@ var proxy = httpProxy.createProxyServer({});
 
 function parseBody(body, callback) {
     let newBody
-    switch (origiBody.webhookEvent) {
+    switch (body.webhookEvent) {
         case 'jira:issue_created':
             newBody = {
                 "username": "Jira",

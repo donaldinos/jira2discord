@@ -1,6 +1,6 @@
 var http = require('http'),
     httpProxy = require('http-proxy'),
-    const url = require('url');
+    url = require('url');
 
 //
 // Create a proxy server with custom application logic

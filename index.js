@@ -129,8 +129,8 @@ var server = http.createServer(function(req, res) {
     });
     req.on('end', () => {
         res.end('ok');
-        JSON.parse(body);
-        parseBody(body, function(newBody) {
+        jsonBody = JSON.parse(body);
+        parseBody(jsonBody, function(newBody) {
             req.write(JSON.stringify(newBody));
             proxy.web(req, res, { changeOrigin: true, target: 'https://discordapp.com/api/webhooks/439067758739587073/ha9l-06jomi48CxNVGz1r3up3V2ZZFPH-StZJ49x84Fkhokkqe7z_Wm4f8hznV9280qn' });
             console.log("--------------")

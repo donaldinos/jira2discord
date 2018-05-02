@@ -123,16 +123,34 @@ function parseBody(body, callback) {
 var server = http.createServer(function(req, res) {
     // You can define here your custom logic to handle the request
     // and then proxy the request.
+    let method = req.method.toLowerCase();
+    let uri = url.parse(req.url.toLowerCase());
+    let host = req.headers.host;
     let body = '';
+
     req.on('data', chunk => {
         body += chunk.toString(); // convert Buffer to string
     });
+
+
     req.on('end', () => {
-        res.end('ok');
+        console.log('----------------')
+        console.log(method, uri);
+        console.log(host);
+        console.log(data.toString('utf8'));
+        console.log(method);
+        console.log('----------------')
+
+        res.writeHead(200, 'Ok.');
+
         jsonBody = JSON.parse(body);
+
         parseBody(jsonBody, function(newBody) {
-            req.write(JSON.stringify(newBody));
-            proxy.web(req, res, { changeOrigin: true, target: 'https://discordapp.com/api/webhooks/439067758739587073/ha9l-06jomi48CxNVGz1r3up3V2ZZFPH-StZJ49x84Fkhokkqe7z_Wm4f8hznV9280qn' });
+            let req1 = http.request({ "method": method, "path": uri.path, "host": host });
+            req1.useChunkedEncodingByDefault = true;
+
+            req1.write(JSON.stringify(newBody));
+            proxy.web(req1, res, { changeOrigin: true, target: 'https://discordapp.com/api/webhooks/439067758739587073/ha9l-06jomi48CxNVGz1r3up3V2ZZFPH-StZJ49x84Fkhokkqe7z_Wm4f8hznV9280qn' });
             console.log("--------------")
             console.log(newBody);
             console.log("--------------")

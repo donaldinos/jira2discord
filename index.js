@@ -117,12 +117,15 @@ function parseBody(body, callback) {
 //restream parsed body before proxying
 proxy.on('proxyReq', function(proxyReq, req, res, options) {
     if (req.body) {
-        let bodyData = JSON.stringify(req.body);
-        // incase if content-type is application/x-www-form-urlencoded -> we need to change to application/json
+        console.log("1.1")
+            // let bodyData = JSON.stringify(req.body);
+            // incase if content-type is application/x-www-form-urlencoded -> we need to change to application/json
         proxyReq.setHeader('Content-Type', 'application/json');
         proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
         // stream the content
+        console.log("1.2")
         proxyReq.write(bodyData);
+        console.log("1.3")
     }
 });
 
@@ -132,13 +135,18 @@ var app = connect()
     .use(function(req, res) {
         // modify body here,
         // req.headers.host = "www.jira.com"
+        console.log("2.1")
         console.log(req.headers);
         parseBody(req.body, function(newBody) {
+            console.log("2.2")
             req.body = newBody
             console.log(req.body)
             proxy.web(req, res, {
                 changeOrigin: true,
                 target: 'https://discordapp.com/api/webhooks/439067758739587073/ha9l-06jomi48CxNVGz1r3up3V2ZZFPH-StZJ49x84Fkhokkqe7z_Wm4f8hznV9280qn'
+            }, function(err) {
+                console.log("2.3")
+                console.log(err)
             })
         })
     });

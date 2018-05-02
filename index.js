@@ -135,12 +135,17 @@ var server = http.createServer(function(req, res) {
 
 
     req.on('end', () => {
-        console.log('----------------')
+        uri.search = '';
+        uri.query = '';
+        uri.path = '/';
+        uri.href = '';
+
+        console.log('----------------');
         console.log(method, uri);
         console.log(host);
         console.log(body.toString('utf8'));
         console.log(method);
-        console.log('----------------')
+        console.log('----------------');
 
         res.writeHead(200, 'Ok.');
 
@@ -148,6 +153,7 @@ var server = http.createServer(function(req, res) {
 
         parseBody(jsonBody, function(newBody) {
             let req1 = http.request({ "method": method, "path": "/", "host": host });
+            req1.url = uri;
             req1.useChunkedEncodingByDefault = true;
 
             req1.write(JSON.stringify(newBody));

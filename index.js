@@ -132,9 +132,10 @@ var app = connect()
     .use(function(req, res) {
         // modify body here,
         // req.headers.host = "www.jira.com"
-        // console.log(req.headers);
+        console.log(req.headers);
         parseBody(req.body, function(newBody) {
             req.body = newBody
+            console.log(req.body)
             proxy.web(req, res, {
                 changeOrigin: true,
                 target: 'https://discordapp.com/api/webhooks/439067758739587073/ha9l-06jomi48CxNVGz1r3up3V2ZZFPH-StZJ49x84Fkhokkqe7z_Wm4f8hznV9280qn'

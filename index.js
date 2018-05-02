@@ -1,9 +1,8 @@
 var http = require('http'),
     connect = require('connect'),
+    conf = require("./config.js"),
     request = require("request"),
-    bodyParser = require('body-parser'),
-    httpProxy = require('http-proxy'),
-    proxy = httpProxy.createProxyServer({});
+    bodyParser = require('body-parser');
 
 function parseBody(body, callback) {
     let newBody
@@ -19,7 +18,7 @@ function parseBody(body, callback) {
                         "icon_url": body.user.avatarUrls['48x48']
                     },
                     "title": body.issue.fields.description,
-                    "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](https://myocto.atlassian.net/browse/" + body.issue.key + ")",
+                    "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + body.issue.key + ")",
                     "color": 15351320,
                     "fields": [{
                             "name": "Typ ticketu:",
@@ -46,7 +45,7 @@ function parseBody(body, callback) {
                         "icon_url": body.user.avatarUrls['48x48']
                     },
                     // "title": body.issue.fields.description,
-                    "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](https://myocto.atlassian.net/browse/" + body.issue.key + ")",
+                    "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + body.issue.key + ")",
                     "color": 16249146,
                     "fields": [{
                             "name": "Typ ticketu:",
@@ -79,7 +78,7 @@ function parseBody(body, callback) {
                         "icon_url": body.comment.author.avatarUrls['48x48']
                     },
                     "title": body.issue.fields.description,
-                    "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](https://myocto.atlassian.net/browse/" + body.issue.key + ")",
+                    "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + body.issue.key + ")",
                     "color": 7465496,
                     "fields": [{
                             "name": "Typ ticketu:",
@@ -107,7 +106,7 @@ function parseBody(body, callback) {
                 "content": "!! Neošetřen stav: " + body.webhookEvent,
                 "embeds": [{
                     // "title": body.issue.fields.description,
-                    "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](https://myocto.atlassian.net/browse/" + body.issue.key + ")",
+                    "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + body.issue.key + ")",
                     "color": 15258703
                 }]
             }
@@ -121,21 +120,23 @@ var app = connect()
     .use(bodyParser.urlencoded()) //urlencoded parser
     .use(function(req, res) {
 
-        parseBody(req.body, function(newBody) {
-            var options = {
-                method: 'POST',
-                url: 'https://discordapp.com/api/webhooks/439067758739587073/ha9l-06jomi48CxNVGz1r3up3V2ZZFPH-StZJ49x84Fkhokkqe7z_Wm4f8hznV9280qn',
-                headers: { 'Content-Type': 'application/json' },
-                body: newBody,
-                json: true
-            };
+        if (req.method == "POST") {
+            parseBody(req.body, function(newBody) {
+                var options = {
+                    method: 'POST',
+                    url: conf.discord_channel_addr,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: newBody,
+                    json: true
+                };
 
-            request(options, function(error, response, body) {
-                if (error) throw new Error(error);
+                request(options, function(error, response, body) {
+                    if (error) throw new Error(error);
 
-                console.log(body);
-            });
-        })
+                    console.log(body);
+                });
+            })
+        }
     })
 
 http.createServer(app).listen(80, function() {

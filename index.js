@@ -98,6 +98,20 @@ function parseBody(body, callback) {
                 }]
             }
             break;
+        case 'project_created':
+            newBody = {
+                "username": "Jira",
+                "avatar_url": "https://i.imgur.com/mdp3NY3.png",
+                "content": "Projekt byl vytvořen",
+                "embeds": [{
+                    "author": {
+                        "name": body.project.projectLead.name,
+                    },
+                    "title": body.project.name,
+                    "color": 14498551,
+                }]
+            }
+            break;
         default:
             console.log(body)
             newBody = {

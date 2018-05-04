@@ -7,7 +7,7 @@ var http = require('http'),
 function getIssueInfo(issueID) {
     var options = {
         method: 'GET',
-        url: conf.jira_project_addr + "rest/api/2/issue/" + issueID
+        url: conf.jira_project_addr + "/rest/api/2/issue/" + issueID
     };
 
     return new Promise(function(resolve, reject) {
@@ -39,7 +39,7 @@ function parseBody(body) {
                             "icon_url": body.user.avatarUrls['48x48']
                         },
                         "title": body.issue.fields.description,
-                        "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + body.issue.key + ")",
+                        "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + '/browse/' + body.issue.key + ")",
                         "color": 15351320,
                         "fields": [{
                                 "name": "Typ ticketu:",
@@ -66,7 +66,7 @@ function parseBody(body) {
                             "icon_url": body.user.avatarUrls['48x48']
                         },
                         // "title": body.issue.fields.description,
-                        "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + body.issue.key + ")",
+                        "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + '/browse/' + body.issue.key + ")",
                         "color": 16249146,
                         "fields": [{
                                 "name": "Typ ticketu:",
@@ -98,7 +98,7 @@ function parseBody(body) {
                             "icon_url": body.comment.author.avatarUrls['48x48']
                         },
                         "title": body.issue.fields.description,
-                        "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + body.issue.key + ")",
+                        "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + '/browse/' + body.issue.key + ")",
                         "color": 7465496,
                         "fields": [{
                                 "name": "Typ ticketu:",
@@ -151,7 +151,7 @@ function parseBody(body) {
                                     "icon_url": body.worklog.author.avatarUrls['48x48']
                                 },
                                 "title": issueBody.fields.issuetype.description,
-                                "description": "[" + issueBody.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + issueBody.key + ")",
+                                "description": "[" + issueBody.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + '/browse/' + issueBody.key + ")",
                                 "color": 16249146,
                                 "fields": [{
                                         "name": "Typ ticketu:",

@@ -173,7 +173,7 @@ function parseBody(body) {
                     }, function(err) {
                         reject(err);
                     })
-                    .catch(err) {
+                    .catch(function(err)) {
                         reject(err)
                     }
                 break;

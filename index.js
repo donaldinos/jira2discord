@@ -21,135 +21,85 @@ function getIssueInfo(issueID) {
     });
 }
 
-function parseBody(body, callback) {
-    let newBody
-    switch (body.webhookEvent) {
-        case 'jira:issue_created':
-            newBody = {
-                "username": "Jira",
-                "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                "content": "Ticket byl vytvořen",
-                "embeds": [{
-                    "author": {
-                        "name": body.user.displayName,
-                        "icon_url": body.user.avatarUrls['48x48']
-                    },
-                    "title": body.issue.fields.description,
-                    "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + body.issue.key + ")",
-                    "color": 15351320,
-                    "fields": [{
-                            "name": "Typ ticketu:",
-                            "value": body.issue.fields.issuetype.name,
-                            "inline": true
-                        },
-                        {
-                            "name": "Priorita:",
-                            "value": body.issue.fields.priority.name,
-                            "inline": true
-                        }
-                    ]
-                }]
-            }
-            break;
-        case 'jira:issue_updated':
-            newBody = {
-                "username": "Jira",
-                "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                "content": "Ticket byl aktualizován",
-                "embeds": [{
-                    "author": {
-                        "name": body.user.displayName,
-                        "icon_url": body.user.avatarUrls['48x48']
-                    },
-                    // "title": body.issue.fields.description,
-                    "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + body.issue.key + ")",
-                    "color": 16249146,
-                    "fields": [{
-                            "name": "Typ ticketu:",
-                            "value": body.issue.fields.issuetype.name,
-                            "inline": true
-                        },
-                        {
-                            "name": "Priorita:",
-                            "value": body.issue.fields.priority.name,
-                            "inline": true
-                        }
-                    ]
-                }]
-            }
-            break;
-        case 'comment_created':
-            let comment
-            if (body.comment.body.length > 1000) {
-                comment = body.comment.body.substring(0, 1000) + "..."
-            } else {
-                comment = body.comment.body
-            }
-            newBody = {
-                "username": "Jira",
-                "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                "content": "Ticket byl komentován",
-                "embeds": [{
-                    "author": {
-                        "name": body.comment.author.displayName,
-                        "icon_url": body.comment.author.avatarUrls['48x48']
-                    },
-                    "title": body.issue.fields.description,
-                    "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + body.issue.key + ")",
-                    "color": 7465496,
-                    "fields": [{
-                            "name": "Typ ticketu:",
-                            "value": body.issue.fields.issuetype.name,
-                            "inline": true
-                        },
-                        {
-                            "name": "Priorita:",
-                            "value": body.issue.fields.priority.name,
-                            "inline": true
-                        },
-                        {
-                            "name": "Komentář:",
-                            "value": comment
-                        }
-                    ]
-                }]
-            }
-            break;
-        case 'project_created':
-            newBody = {
-                "username": "Jira",
-                "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                "content": "Projekt byl vytvořen",
-                "embeds": [{
-                    "author": {
-                        "name": body.project.projectLead.name,
-                    },
-                    "title": body.project.name,
-                    "color": 14498551,
-                }]
-            }
-            break;
-        case 'worklog_created':
-            let comment
-            if (body.comment.length > 1000) {
-                comment = body.comment.substring(0, 1000) + "..."
-            } else {
-                comment = body.comment
-            }
-            getIssueInfo(body.issueId).then(function(resolve) {
-                let issueBody = resolve
+function parseBody(body) {
+
+    return new Promise(function(resolve, reject) {
+        let newBody
+        let comment
+        switch (body.webhookEvent) {
+            case 'jira:issue_created':
                 newBody = {
                     "username": "Jira",
                     "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                    "content": "Ticket byl aktualizován a byl nad ním vykázanej strávenej čas",
+                    "content": "Ticket byl vytvořen",
                     "embeds": [{
                         "author": {
-                            "name": body.worklog.author.name,
-                            "icon_url": body.worklog.author.avatarUrls['48x48']
+                            "name": body.user.displayName,
+                            "icon_url": body.user.avatarUrls['48x48']
                         },
-                        "title": issueBody.fields.issuetype.description,
-                        "description": "[" + issueBody.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + issueBody.key + ")",
+                        "title": body.issue.fields.description,
+                        "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + body.issue.key + ")",
+                        "color": 15351320,
+                        "fields": [{
+                                "name": "Typ ticketu:",
+                                "value": body.issue.fields.issuetype.name,
+                                "inline": true
+                            },
+                            {
+                                "name": "Priorita:",
+                                "value": body.issue.fields.priority.name,
+                                "inline": true
+                            }
+                        ]
+                    }]
+                }
+                break;
+            case 'jira:issue_updated':
+                newBody = {
+                    "username": "Jira",
+                    "avatar_url": "https://i.imgur.com/mdp3NY3.png",
+                    "content": "Ticket byl aktualizován",
+                    "embeds": [{
+                        "author": {
+                            "name": body.user.displayName,
+                            "icon_url": body.user.avatarUrls['48x48']
+                        },
+                        // "title": body.issue.fields.description,
+                        "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + body.issue.key + ")",
                         "color": 16249146,
+                        "fields": [{
+                                "name": "Typ ticketu:",
+                                "value": body.issue.fields.issuetype.name,
+                                "inline": true
+                            },
+                            {
+                                "name": "Priorita:",
+                                "value": body.issue.fields.priority.name,
+                                "inline": true
+                            }
+                        ]
+                    }]
+                }
+                break;
+            case 'comment_created':
+                let comment
+                if (body.comment.body.length > 1000) {
+                    comment = body.comment.body.substring(0, 1000) + "..."
+                } else {
+                    comment = body.comment.body
+                }
+                newBody = {
+                    "username": "Jira",
+                    "avatar_url": "https://i.imgur.com/mdp3NY3.png",
+                    "content": "Ticket byl komentován",
+                    "embeds": [{
+                        "author": {
+                            "name": body.comment.author.displayName,
+                            "icon_url": body.comment.author.avatarUrls['48x48']
+                        },
+                        "title": body.issue.fields.description,
+                        "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + body.issue.key + ")",
+                        "color": 7465496,
                         "fields": [{
                                 "name": "Typ ticketu:",
                                 "value": body.issue.fields.issuetype.name,
@@ -167,24 +117,77 @@ function parseBody(body, callback) {
                         ]
                     }]
                 }
-            }, function(err) {
-                console.log(err);
-            })
-            break;
-        default:
-            console.log(body)
-            newBody = {
-                "username": "Jira",
-                "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                "content": "!! Neošetřen stav: " + body.webhookEvent,
-                "embeds": [{
-                    // "title": body.issue.fields.description,
-                    // "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "]",
-                    "color": 15258703
-                }]
-            }
-    }
-    callback(newBody)
+                break;
+            case 'project_created':
+                newBody = {
+                    "username": "Jira",
+                    "avatar_url": "https://i.imgur.com/mdp3NY3.png",
+                    "content": "Projekt byl vytvořen",
+                    "embeds": [{
+                        "author": {
+                            "name": body.project.projectLead.name,
+                        },
+                        "title": body.project.name,
+                        "color": 14498551,
+                    }]
+                }
+                break;
+            case 'worklog_created':
+                if (body.comment.length > 1000) {
+                    comment = body.comment.substring(0, 1000) + "..."
+                } else {
+                    comment = body.comment
+                }
+                getIssueInfo(body.issueId).then(function(resolve) {
+                    let issueBody = resolve
+                    newBody = {
+                        "username": "Jira",
+                        "avatar_url": "https://i.imgur.com/mdp3NY3.png",
+                        "content": "Ticket byl aktualizován a byl nad ním vykázanej strávenej čas",
+                        "embeds": [{
+                            "author": {
+                                "name": body.worklog.author.name,
+                                "icon_url": body.worklog.author.avatarUrls['48x48']
+                            },
+                            "title": issueBody.fields.issuetype.description,
+                            "description": "[" + issueBody.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + issueBody.key + ")",
+                            "color": 16249146,
+                            "fields": [{
+                                    "name": "Typ ticketu:",
+                                    "value": body.issue.fields.issuetype.name,
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Priorita:",
+                                    "value": body.issue.fields.priority.name,
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Komentář:",
+                                    "value": comment
+                                }
+                            ]
+                        }]
+                    }
+                }, function(err) {
+                    reject(err);
+                })
+                break;
+            default:
+                console.log(body)
+                newBody = {
+                    "username": "Jira",
+                    "avatar_url": "https://i.imgur.com/mdp3NY3.png",
+                    "content": "!! Neošetřen stav: " + body.webhookEvent,
+                    "embeds": [{
+                        // "title": body.issue.fields.description,
+                        // "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "]",
+                        "color": 15258703
+                    }]
+                }
+        }
+        resolve(newBody);
+    });
 }
 
 
@@ -194,7 +197,7 @@ var app = connect()
     .use(function(req, res) {
 
         if (req.method == "POST") {
-            parseBody(req.body, function(newBody) {
+            parseBody(req.body).then(function(newBody) {
                 var options = {
                     method: 'POST',
                     url: conf.discord_channel_addr,
@@ -208,6 +211,8 @@ var app = connect()
 
                     console.log(body);
                 });
+            }, function(err) {
+                console.log(err)
             })
         }
     })

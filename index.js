@@ -25,6 +25,7 @@ function parseBody(body) {
 
     return new Promise(function(resolve, reject) {
         let newBody
+        let comment
 
         switch (body.webhookEvent) {
             case 'jira:issue_created':
@@ -82,7 +83,6 @@ function parseBody(body) {
                 }
                 break;
             case 'comment_created':
-                let comment
                 if (body.comment.body.length > 1000) {
                     comment = body.comment.body.substring(0, 1000) + "..."
                 } else {
@@ -133,7 +133,6 @@ function parseBody(body) {
                 }
                 break;
             case 'worklog_created':
-                let comment
                 if (body.worklog.comment.length > 1000) {
                     comment = body.worklog.comment.substring(0, 1000) + "..."
                 } else {

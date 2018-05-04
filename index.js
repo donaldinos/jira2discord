@@ -173,9 +173,9 @@ function parseBody(body) {
                     }, function(err) {
                         reject(err);
                     })
-                    .catch(function(err)) {
+                    .catch(function(err) {
                         reject(err)
-                    }
+                    })
                 break;
             default:
                 console.log(body)

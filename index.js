@@ -133,10 +133,10 @@ function parseBody(body) {
                 }
                 break;
             case 'worklog_created':
-                if (body.comment.length > 1000) {
-                    comment = body.comment.substring(0, 1000) + "..."
+                if (body.worklog.comment.length > 1000) {
+                    comment = body.worklog.comment.substring(0, 1000) + "..."
                 } else {
-                    comment = body.comment
+                    comment = body.worklog.comment
                 }
                 getIssueInfo(body.issueId).then(function(resolve) {
                     let issueBody = resolve

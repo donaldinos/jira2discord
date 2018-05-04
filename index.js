@@ -7,7 +7,7 @@ var http = require('http'),
 function getIssueInfo(issueID) {
     var options = {
         method: 'GET',
-        url: conf.jira_project_addr + "/rest/api/2/issue/" + issueID
+        url: conf.jira_project_addr + "rest/api/2/issue/" + issueID
     };
 
     return new Promise(function(resolve, reject) {
@@ -138,7 +138,7 @@ function parseBody(body) {
                 } else {
                     comment = body.worklog.comment
                 }
-                getIssueInfo(body.issueId)
+                getIssueInfo(body.worklog.issueId)
                     .then(function(resolve) {
                         let issueBody = resolve
                         newBody = {

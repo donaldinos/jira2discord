@@ -149,44 +149,44 @@ function parseBody(body) {
                 } else {
                     comment = body.worklog.comment
                 }
-                // getIssueInfo(body.worklog.issueId)
-                //     .then(function(resolve) {
-                // let issueBody = resolve
-                newBody = {
-                        "username": "Jira",
-                        "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                        "content": "Ticket byl aktualizován a byl nad ním vykázanej strávenej čas",
-                        "embeds": [{
-                            "author": {
-                                "name": body.worklog.author.displayName,
-                                "icon_url": body.worklog.author.avatarUrls['48x48']
-                            },
-                            "title": issueBody.fields.issuetype.description,
-                            "description": "[Odkaz na JSON data vykázaného tiketu](" + conf.jira_project_addr + "/rest/api/2/issue/" + body.worklog.issueId + ")",
-                            "color": 16249146,
-                            "fields": [{
-                                    "name": "Typ ticketu:",
-                                    "value": body.issue.fields.issuetype.name,
-                                    "inline": true
+                getIssueInfo(body.worklog.issueId)
+                    .then(function(resolve) {
+                        let issueBody = resolve
+                        newBody = {
+                            "username": "Jira",
+                            "avatar_url": "https://i.imgur.com/mdp3NY3.png",
+                            "content": "Ticket byl aktualizován a byl nad ním vykázanej strávenej čas",
+                            "embeds": [{
+                                "author": {
+                                    "name": body.worklog.author.displayName,
+                                    "icon_url": body.worklog.author.avatarUrls['48x48']
                                 },
-                                {
-                                    "name": "Priorita:",
-                                    "value": body.issue.fields.priority.name,
-                                    "inline": true
-                                },
-                                {
-                                    "name": "Komentář:",
-                                    "value": comment
-                                }
-                            ]
-                        }]
-                    }
-                    // }, function(err) {
-                    //     reject(err);
-                    // })
-                    // .catch(function(err) {
-                    //     reject(err)
-                    // })
+                                "title": issueBody.fields.issuetype.description,
+                                "description": "[" + issueBody.issue.key + ": " + issueBody.issue.fields.summary + "](" + conf.jira_project_addr + '/browse/' + issueBody.issue.key + ")",
+                                "color": 16249146,
+                                "fields": [{
+                                        "name": "Typ ticketu:",
+                                        "value": issueBody.issue.fields.issuetype.name,
+                                        "inline": true
+                                    },
+                                    {
+                                        "name": "Priorita:",
+                                        "value": issueBody.issue.fields.priority.name,
+                                        "inline": true
+                                    },
+                                    {
+                                        "name": "Komentář:",
+                                        "value": comment
+                                    }
+                                ]
+                            }]
+                        }
+                    }, function(err) {
+                        reject(err);
+                    })
+                    .catch(function(err) {
+                        reject(err)
+                    })
                 break;
             default:
                 console.log(body)

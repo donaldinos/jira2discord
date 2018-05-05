@@ -273,22 +273,27 @@ app.get('/', function(req, res) {
 });
 
 app.post('/', function(req, res) {
-    parseBody(req.body).then(function(newBody) {
-        var options = {
-            method: 'POST',
-            url: conf.discord_channel_addr,
-            headers: { 'Content-Type': 'application/json' },
-            body: newBody,
-            json: true
-        };
+    parseBody(req.body)
+        .then(function(newBody) {
+            var options = {
+                method: 'POST',
+                url: conf.discord_channel_addr,
+                headers: { 'Content-Type': 'application/json' },
+                body: newBody,
+                json: true
+            };
 
-        request(options, function(error, response, body) {
-            if (error) throw new Error(error);
-            console.log(body);
-        });
-    }, function(err) {
-        console.log(err)
-    })
+            request(options, function(error, response, body) {
+                if (error) throw new Error(error);
+                console.log(body);
+            });
+        }, function(err) {
+            console.log(err)
+            reject(err)
+        }).catch(function(err) {
+            console.log(err)
+            reject(err)
+        })
 })
 
 app.listen(80, function() {

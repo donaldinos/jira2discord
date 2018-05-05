@@ -10,6 +10,7 @@ There is link to create OAuth authentification to JIRA for get additional inform
 This is solution for NodeJS https://devup.co/jira-rest-api-oauth-authentication-in-node-js-2f8d226a493a
 
 # Fix issue with OAuth module
+(Thnx to https://devup.co/jira-rest-api-oauth-authentication-in-node-js-2f8d226a493a)
 
 There is still one trick about calling the GET methods with our OAuth NPM. The JIRA REST API GET methods needs the ‘content type’ to be specified which our OAuth NPM kind of ignores. So we have to customize the NPM to suit our needs.
 

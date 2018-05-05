@@ -76,6 +76,7 @@ function parseBody(body) {
                             ]
                         }]
                     }
+                    resolve(newBody);
                     break;
                 case 'jira:issue_updated':
                     newBody = {
@@ -103,6 +104,7 @@ function parseBody(body) {
                             ]
                         }]
                     }
+                    resolve(newBody);
                     break;
                 case 'comment_created':
                     if (body.comment.body.length > 1000) {
@@ -139,6 +141,7 @@ function parseBody(body) {
                             ]
                         }]
                     }
+                    resolve(newBody);
                     break;
                 case 'project_created':
                     newBody = {
@@ -153,6 +156,7 @@ function parseBody(body) {
                             "color": 14498551,
                         }]
                     }
+                    resolve(newBody);
                     break;
                 case 'worklog_created':
                     if (body.worklog.comment.length > 1000) {
@@ -213,6 +217,7 @@ function parseBody(body) {
                                         }]
                                     }
                                 }
+                                resolve(newBody);
                             },
                             function(err) {
                                 console.log('===============================')
@@ -237,8 +242,8 @@ function parseBody(body) {
                             "color": 15258703
                         }]
                     }
+                    resolve(newBody);
             }
-            resolve(newBody);
         });
     } catch (err) {
         console.log('===============================')

@@ -1,28 +1,39 @@
-var http = require('http'),
-    connect = require('connect'),
-    conf = require("./config.js"),
-    request = require("request"),
-    bodyParser = require('body-parser');
+var express = require('express');
+var conf = require("./config.js");
+var session = require('express-session');
+var bodyParser = require('body-parser');
+var OAuth = require('oauth').OAuth;
+var fs = require('fs');
+var oauthToken, tokenSecret;
+var app = express();
 
 function getIssueInfo(issueID) {
-    var options = {
-        method: 'GET',
-        url: conf.jira_project_addr + "/rest/api/2/issue/" + issueID
-    };
+    var issue = new OAuth(
+        conf.jira_project_addr + "/plugins/servlet/oauth/request-token",
+        conf.jira_project_addr + "/plugins/servlet/oauth/access-token",
+        conf.jira_consumer_key,
+        fs.readFileSync('./jira.pem', 'utf8'), //consumer secret, eg. fs.readFileSync('jira.pem', 'utf8')
+        '1.0',
+        conf.jira_callback_url + "/jira/callback",
+        "RSA-SHA1"
+    );
 
     return new Promise(function(resolve, reject) {
-        request(options, function(error, response, body) {
-            if (error) {
-                reject(err);
-            } else {
-                resolve(JSON.parse(body));
-            }
-        });
+        issue.get(conf.jira_project_addr + "/rest/api/2/issue/" + issueID,
+            oauthToken, //"OAUTH_TOKEN", //authtoken
+            tokenSecret, //"TOKEN_SECRET", //oauth secret
+
+            function(error, data, resp) {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(JSON.parse(data));
+                }
+            });
     });
 }
 
 function parseBody(body) {
-
     return new Promise(function(resolve, reject) {
         let newBody
         let comment
@@ -138,44 +149,44 @@ function parseBody(body) {
                 } else {
                     comment = body.worklog.comment
                 }
-                getIssueInfo(body.worklog.issueId)
-                    .then(function(resolve) {
-                        let issueBody = resolve
-                        newBody = {
-                            "username": "Jira",
-                            "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                            "content": "Ticket byl aktualizován a byl nad ním vykázanej strávenej čas",
-                            "embeds": [{
-                                "author": {
-                                    "name": body.worklog.author.name,
-                                    "icon_url": body.worklog.author.avatarUrls['48x48']
+                // getIssueInfo(body.worklog.issueId)
+                //     .then(function(resolve) {
+                // let issueBody = resolve
+                newBody = {
+                        "username": "Jira",
+                        "avatar_url": "https://i.imgur.com/mdp3NY3.png",
+                        "content": "Ticket byl aktualizován a byl nad ním vykázanej strávenej čas",
+                        "embeds": [{
+                            "author": {
+                                "name": body.worklog.author.displayName,
+                                "icon_url": body.worklog.author.avatarUrls['48x48']
+                            },
+                            "title": issueBody.fields.issuetype.description,
+                            "description": "[Odkaz na JSON data vykázaného tiketu](" + conf.jira_project_addr + "/rest/api/2/issue/" + body.worklog.issueId + ")",
+                            "color": 16249146,
+                            "fields": [{
+                                    "name": "Typ ticketu:",
+                                    "value": body.issue.fields.issuetype.name,
+                                    "inline": true
                                 },
-                                "title": issueBody.fields.issuetype.description,
-                                "description": "[" + issueBody.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + '/browse/' + issueBody.key + ")",
-                                "color": 16249146,
-                                "fields": [{
-                                        "name": "Typ ticketu:",
-                                        "value": body.issue.fields.issuetype.name,
-                                        "inline": true
-                                    },
-                                    {
-                                        "name": "Priorita:",
-                                        "value": body.issue.fields.priority.name,
-                                        "inline": true
-                                    },
-                                    {
-                                        "name": "Komentář:",
-                                        "value": comment
-                                    }
-                                ]
-                            }]
-                        }
-                    }, function(err) {
-                        reject(err);
-                    })
-                    .catch(function(err) {
-                        reject(err)
-                    })
+                                {
+                                    "name": "Priorita:",
+                                    "value": body.issue.fields.priority.name,
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Komentář:",
+                                    "value": comment
+                                }
+                            ]
+                        }]
+                    }
+                    // }, function(err) {
+                    //     reject(err);
+                    // })
+                    // .catch(function(err) {
+                    //     reject(err)
+                    // })
                 break;
             default:
                 console.log(body)
@@ -194,12 +205,10 @@ function parseBody(body) {
     });
 }
 
-
-var app = connect()
+app.use(session({ secret: 'red', saveUninitialized: true, resave: true }))
     .use(bodyParser.json()) //json parser
-    .use(bodyParser.urlencoded()) //urlencoded parser
+    .use(bodyParser.urlencoded({ extended: true })) //urlencoded parser
     .use(function(req, res) {
-
         if (req.method == "POST") {
             parseBody(req.body).then(function(newBody) {
                 var options = {
@@ -212,7 +221,6 @@ var app = connect()
 
                 request(options, function(error, response, body) {
                     if (error) throw new Error(error);
-
                     console.log(body);
                 });
             }, function(err) {
@@ -221,6 +229,69 @@ var app = connect()
         }
     })
 
-http.createServer(app).listen(80, function() {
+app.get('/jira', function(req, res) {
+    var oa = new OAuth(conf.jira_callback_url + "/plugins/servlet/oauth/request-token", //request token
+        conf.jira_callback_url + "/plugins/servlet/oauth/access-token", //access token
+        conf.jira_consumer_key, //consumer key 
+        fs.readFileSync('./jira.pem', 'utf8'), //consumer secret, eg. fs.readFileSync('jira.pem', 'utf8')
+        '1.0', //OAuth version
+        conf.jira_callback_url + "/jira/callback", //callback url
+        "RSA-SHA1");
+    oa.getOAuthRequestToken(function(error, oauthToken, oauthTokenSecret) {
+        if (error) {
+            console.log('Error:', error);
+            res.send('STEP 1: Error requesting OAuth access token');
+        } else {
+            req.session.oa = oa;
+            req.session.oauth_token = oauthToken;
+            req.session.oauth_token_secret = oauthTokenSecret;
+            return res.redirect(conf.jira_callback_url + "/plugins/servlet/oauth/authorize?oauth_token=" + oauthToken);
+        }
+    });
+});
+
+app.get('/jira/callback', function(req, res) {
+    if (req.query.oauth_verifier === 'denied') {
+        console.log('Error:', { 'oauth_verifier': 'denied' })
+        return res.send('STEP 2: Error authorizing OAuth access token')
+    }
+    var oa = new OAuth(req.session.oa._requestUrl,
+        req.session.oa._accessUrl,
+        req.session.oa._consumerKey,
+        fs.readFileSync('./jira.pem', 'utf8'), //consumer secret, eg. fs.readFileSync('jira.pem', 'utf8')
+        req.session.oa._version,
+        req.session.oa._authorize_callback,
+        req.session.oa._signatureMethod);
+    console.log(oa);
+
+    oa.getOAuthAccessToken(
+        req.session.oauth_token,
+        req.session.oauth_token_secret,
+        req.query.oauth_verifier,
+        function(error, oauth_access_token, oauth_access_token_secret, results2) {
+            if (error) {
+                console.log('Error:', error);
+                res.send('STEP 3: Error accessing OAuth access token');
+            } else {
+                // store the access token in the session
+                req.session.oauth_access_token = oauth_access_token;
+                req.session.oauth_access_token_secret = oauth_access_token_secret;
+
+                res.send({
+                    message: "successfully authenticated.",
+                    access_token: oauth_access_token,
+                    secret: oauth_access_token_secret
+                });
+                oauthToken = oauth_access_token;
+                tokenSecret = oauth_access_token_secret;
+            }
+        });
+});
+
+app.get('/', function(req, res) {
+    res.send("This is JIRA 2 DISCORD plugin. For get accesstoken call firt <YOUR_URL>/jira !");
+});
+
+app.listen(80, function() {
     console.log('Transfer JIRA 2 DISCORD listen 80');
 });

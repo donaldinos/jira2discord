@@ -27,9 +27,10 @@ function getIssueInfo(issueID) {
         issue.get(conf.jira_project_addr + "/rest/api/2/issue/" + issueID,
             oauthToken, //"OAUTH_TOKEN", //authtoken
             tokenSecret, //"TOKEN_SECRET", //oauth secret
-
             function(error, data, resp) {
                 if (error) {
+                    console.log('===============================')
+                    console.log('getIssueInfo Promise err: ', err)
                     reject(error);
                 } else {
                     resolve(JSON.parse(data));
@@ -39,175 +40,185 @@ function getIssueInfo(issueID) {
 }
 
 function parseBody(body) {
-    return new Promise(function(resolve, reject) {
-        let newBody
-        let comment
+    try {
+        return new Promise(function(resolve, reject) {
+            let newBody
+            let comment
 
-        switch (body.webhookEvent) {
-            case 'jira:issue_created':
-                newBody = {
-                    "username": "Jira",
-                    "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                    "content": "Ticket byl vytvořen",
-                    "embeds": [{
-                        "author": {
-                            "name": body.user.displayName,
-                            "icon_url": body.user.avatarUrls['48x48']
-                        },
-                        "title": body.issue.fields.description,
-                        "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + '/browse/' + body.issue.key + ")",
-                        "color": 15351320,
-                        "fields": [{
-                                "name": "Typ ticketu:",
-                                "value": body.issue.fields.issuetype.name,
-                                "inline": true
+            switch (body.webhookEvent) {
+                case 'jira:issue_created':
+                    newBody = {
+                        "username": "Jira",
+                        "avatar_url": "https://i.imgur.com/mdp3NY3.png",
+                        "content": "Ticket byl vytvořen",
+                        "embeds": [{
+                            "author": {
+                                "name": body.user.displayName,
+                                "icon_url": body.user.avatarUrls['48x48']
                             },
-                            {
-                                "name": "Priorita:",
-                                "value": body.issue.fields.priority.name,
-                                "inline": true
-                            }
-                        ]
-                    }]
-                }
-                break;
-            case 'jira:issue_updated':
-                newBody = {
-                    "username": "Jira",
-                    "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                    "content": "Ticket byl aktualizován",
-                    "embeds": [{
-                        "author": {
-                            "name": body.user.displayName,
-                            "icon_url": body.user.avatarUrls['48x48']
-                        },
-                        // "title": body.issue.fields.description,
-                        "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + '/browse/' + body.issue.key + ")",
-                        "color": 16249146,
-                        "fields": [{
-                                "name": "Typ ticketu:",
-                                "value": body.issue.fields.issuetype.name,
-                                "inline": true
-                            },
-                            {
-                                "name": "Priorita:",
-                                "value": body.issue.fields.priority.name,
-                                "inline": true
-                            }
-                        ]
-                    }]
-                }
-                break;
-            case 'comment_created':
-                if (body.comment.body.length > 1000) {
-                    comment = body.comment.body.substring(0, 1000) + "..."
-                } else {
-                    comment = body.comment.body
-                }
-                newBody = {
-                    "username": "Jira",
-                    "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                    "content": "Ticket byl komentován",
-                    "embeds": [{
-                        "author": {
-                            "name": body.comment.author.displayName,
-                            "icon_url": body.comment.author.avatarUrls['48x48']
-                        },
-                        "title": body.issue.fields.description,
-                        "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + '/browse/' + body.issue.key + ")",
-                        "color": 7465496,
-                        "fields": [{
-                                "name": "Typ ticketu:",
-                                "value": body.issue.fields.issuetype.name,
-                                "inline": true
-                            },
-                            {
-                                "name": "Priorita:",
-                                "value": body.issue.fields.priority.name,
-                                "inline": true
-                            },
-                            {
-                                "name": "Komentář:",
-                                "value": comment
-                            }
-                        ]
-                    }]
-                }
-                break;
-            case 'project_created':
-                newBody = {
-                    "username": "Jira",
-                    "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                    "content": "Projekt byl vytvořen",
-                    "embeds": [{
-                        "author": {
-                            "name": body.project.projectLead.name,
-                        },
-                        "title": body.project.name,
-                        "color": 14498551,
-                    }]
-                }
-                break;
-            case 'worklog_created':
-                if (body.worklog.comment.length > 1000) {
-                    comment = body.worklog.comment.substring(0, 1000) + "..."
-                } else {
-                    comment = body.worklog.comment
-                }
-                getIssueInfo(body.worklog.issueId)
-                    .then(function(resolve) {
-                        let issueBody = resolve
-                        newBody = {
-                            "username": "Jira",
-                            "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                            "content": "Ticket byl aktualizován a byl nad ním vykázanej strávenej čas",
-                            "embeds": [{
-                                "author": {
-                                    "name": body.worklog.author.displayName,
-                                    "icon_url": body.worklog.author.avatarUrls['48x48']
+                            "title": body.issue.fields.description,
+                            "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + '/browse/' + body.issue.key + ")",
+                            "color": 15351320,
+                            "fields": [{
+                                    "name": "Typ ticketu:",
+                                    "value": body.issue.fields.issuetype.name,
+                                    "inline": true
                                 },
-                                "title": issueBody.fields.issuetype.description,
-                                "description": "[" + issueBody.issue.key + ": " + issueBody.issue.fields.summary + "](" + conf.jira_project_addr + '/browse/' + issueBody.issue.key + ")",
-                                "color": 16249146,
-                                "fields": [{
-                                        "name": "Typ ticketu:",
-                                        "value": issueBody.issue.fields.issuetype.name,
-                                        "inline": true
+                                {
+                                    "name": "Priorita:",
+                                    "value": body.issue.fields.priority.name,
+                                    "inline": true
+                                }
+                            ]
+                        }]
+                    }
+                    break;
+                case 'jira:issue_updated':
+                    newBody = {
+                        "username": "Jira",
+                        "avatar_url": "https://i.imgur.com/mdp3NY3.png",
+                        "content": "Ticket byl aktualizován",
+                        "embeds": [{
+                            "author": {
+                                "name": body.user.displayName,
+                                "icon_url": body.user.avatarUrls['48x48']
+                            },
+                            // "title": body.issue.fields.description,
+                            "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + '/browse/' + body.issue.key + ")",
+                            "color": 16249146,
+                            "fields": [{
+                                    "name": "Typ ticketu:",
+                                    "value": body.issue.fields.issuetype.name,
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Priorita:",
+                                    "value": body.issue.fields.priority.name,
+                                    "inline": true
+                                }
+                            ]
+                        }]
+                    }
+                    break;
+                case 'comment_created':
+                    if (body.comment.body.length > 1000) {
+                        comment = body.comment.body.substring(0, 1000) + "..."
+                    } else {
+                        comment = body.comment.body
+                    }
+                    newBody = {
+                        "username": "Jira",
+                        "avatar_url": "https://i.imgur.com/mdp3NY3.png",
+                        "content": "Ticket byl komentován",
+                        "embeds": [{
+                            "author": {
+                                "name": body.comment.author.displayName,
+                                "icon_url": body.comment.author.avatarUrls['48x48']
+                            },
+                            "title": body.issue.fields.description,
+                            "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "](" + conf.jira_project_addr + '/browse/' + body.issue.key + ")",
+                            "color": 7465496,
+                            "fields": [{
+                                    "name": "Typ ticketu:",
+                                    "value": body.issue.fields.issuetype.name,
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Priorita:",
+                                    "value": body.issue.fields.priority.name,
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Komentář:",
+                                    "value": comment
+                                }
+                            ]
+                        }]
+                    }
+                    break;
+                case 'project_created':
+                    newBody = {
+                        "username": "Jira",
+                        "avatar_url": "https://i.imgur.com/mdp3NY3.png",
+                        "content": "Projekt byl vytvořen",
+                        "embeds": [{
+                            "author": {
+                                "name": body.project.projectLead.name,
+                            },
+                            "title": body.project.name,
+                            "color": 14498551,
+                        }]
+                    }
+                    break;
+                case 'worklog_created':
+                    if (body.worklog.comment.length > 1000) {
+                        comment = body.worklog.comment.substring(0, 1000) + "..."
+                    } else {
+                        comment = body.worklog.comment
+                    }
+                    getIssueInfo(body.worklog.issueId)
+                        .then(function(resolve) {
+                            let issueBody = resolve
+                            newBody = {
+                                "username": "Jira",
+                                "avatar_url": "https://i.imgur.com/mdp3NY3.png",
+                                "content": "Ticket byl aktualizován a byl nad ním vykázanej strávenej čas",
+                                "embeds": [{
+                                    "author": {
+                                        "name": body.worklog.author.displayName,
+                                        "icon_url": body.worklog.author.avatarUrls['48x48']
                                     },
-                                    {
-                                        "name": "Priorita:",
-                                        "value": issueBody.issue.fields.priority.name,
-                                        "inline": true
-                                    },
-                                    {
-                                        "name": "Komentář:",
-                                        "value": comment
-                                    }
-                                ]
-                            }]
-                        }
-                    }, function(err) {
-                        reject(err);
-                    })
-                    .catch(function(err) {
-                        reject(err)
-                    })
-                break;
-            default:
-                console.log(body)
-                newBody = {
-                    "username": "Jira",
-                    "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                    "content": "!! Neošetřen stav: " + body.webhookEvent,
-                    "embeds": [{
-                        // "title": body.issue.fields.description,
-                        // "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "]",
-                        "color": 15258703
-                    }]
-                }
-        }
-        resolve(newBody);
-    });
+                                    "title": issueBody.fields.issuetype.description,
+                                    "description": "[" + issueBody.issue.key + ": " + issueBody.issue.fields.summary + "](" + conf.jira_project_addr + '/browse/' + issueBody.issue.key + ")",
+                                    "color": 16249146,
+                                    "fields": [{
+                                            "name": "Typ ticketu:",
+                                            "value": issueBody.issue.fields.issuetype.name,
+                                            "inline": true
+                                        },
+                                        {
+                                            "name": "Priorita:",
+                                            "value": issueBody.issue.fields.priority.name,
+                                            "inline": true
+                                        },
+                                        {
+                                            "name": "Komentář:",
+                                            "value": comment
+                                        }
+                                    ]
+                                }]
+                            }
+                        }, function(err) {
+                            console.log('===============================')
+                            console.log('Worklog_created getIssueInfo err: ', err)
+                            reject(err);
+                        })
+                        .catch(function(err) {
+                            console.log('===============================')
+                            console.log('Worklog_created getIssueInfo catch err: ', err)
+                            reject(err)
+                        })
+                    break;
+                default:
+                    console.log('Body for unknow event: ', body)
+                    newBody = {
+                        "username": "Jira",
+                        "avatar_url": "https://i.imgur.com/mdp3NY3.png",
+                        "content": "!! Neošetřen stav: " + body.webhookEvent,
+                        "embeds": [{
+                            // "title": body.issue.fields.description,
+                            // "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "]",
+                            "color": 15258703
+                        }]
+                    }
+            }
+            resolve(newBody);
+        });
+    } catch (err) {
+        console.log('===============================')
+        console.log('parseBody Promise catch err: ', err)
+        reject(err)
+    }
 }
 
 app.get('/jira', function(req, res) {
@@ -220,7 +231,8 @@ app.get('/jira', function(req, res) {
         "RSA-SHA1");
     oa.getOAuthRequestToken(function(error, oauthToken, oauthTokenSecret) {
         if (error) {
-            console.log('Error:', error);
+            console.log('===============================')
+            console.log('getOAuthAccessToken jira err:', error);
             res.send('STEP 1: Error requesting OAuth access token');
         } else {
             req.session.oa = oa;
@@ -233,7 +245,8 @@ app.get('/jira', function(req, res) {
 
 app.get('/jira/callback', function(req, res) {
     if (req.query.oauth_verifier === 'denied') {
-        console.log('Error:', { 'oauth_verifier': 'denied' })
+        console.log('===============================')
+        console.log('OAuth verifier err:', { 'oauth_verifier': 'denied' })
         return res.send('STEP 2: Error authorizing OAuth access token')
     }
     var oa = new OAuth(req.session.oa._requestUrl,
@@ -251,7 +264,8 @@ app.get('/jira/callback', function(req, res) {
         req.query.oauth_verifier,
         function(error, oauth_access_token, oauth_access_token_secret, results2) {
             if (error) {
-                console.log('Error:', error);
+                console.log('===============================')
+                console.log('getOAuthAccessToken jira/callback err:', error);
                 res.send('STEP 3: Error accessing OAuth access token');
             } else {
                 // store the access token in the session
@@ -286,14 +300,20 @@ app.post('/', function(req, res) {
                 };
 
                 request(options, function(error, response, body) {
-                    if (error) throw new Error(error);
-                    console.log(body);
+                    if (error) {
+                        console.log('===============================')
+                        console.log('Request err: ', error)
+                        throw new Error(error);
+                    }
+                    // console.log(body);
                 });
             }, function(err) {
-                console.log(err)
+                console.log('===============================')
+                console.log('1. Parse body err: ', err)
                 reject(err)
             }).catch(function(err) {
-                console.log(err)
+                console.log('===============================')
+                console.log('2. Parse body err: ', err)
                 reject(err)
             })
     } catch (err) {

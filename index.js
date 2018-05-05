@@ -44,13 +44,13 @@ function getIssueInfo(issueID) {
 }
 
 function parseBody(body) {
-    try {
-        return new Promise(function(resolve, reject) {
-            let newBody
-            let comment
+    return new Promise(function(resolve, reject) {
+        let newBody
+        let comment
 
-            switch (body.webhookEvent) {
-                case 'jira:issue_created':
+        switch (body.webhookEvent) {
+            case 'jira:issue_created':
+                try {
                     newBody = {
                         "username": "Jira",
                         "avatar_url": "https://i.imgur.com/mdp3NY3.png",
@@ -77,8 +77,12 @@ function parseBody(body) {
                         }]
                     }
                     resolve(newBody);
-                    break;
-                case 'jira:issue_updated':
+                } catch (err) {
+                    resolve("case jira:issue_created issue")
+                }
+                break;
+            case 'jira:issue_updated':
+                try {
                     newBody = {
                         "username": "Jira",
                         "avatar_url": "https://i.imgur.com/mdp3NY3.png",
@@ -105,8 +109,12 @@ function parseBody(body) {
                         }]
                     }
                     resolve(newBody);
-                    break;
-                case 'comment_created':
+                } catch (err) {
+                    resolve("case jira:issue_updated issue")
+                }
+                break;
+            case 'comment_created':
+                try {
                     if (body.comment.body.length > 1000) {
                         comment = body.comment.body.substring(0, 1000) + "..."
                     } else {
@@ -142,8 +150,12 @@ function parseBody(body) {
                         }]
                     }
                     resolve(newBody);
-                    break;
-                case 'project_created':
+                } catch (err) {
+                    resolve("case comment_created issue")
+                }
+                break;
+            case 'project_created':
+                try {
                     newBody = {
                         "username": "Jira",
                         "avatar_url": "https://i.imgur.com/mdp3NY3.png",
@@ -157,8 +169,12 @@ function parseBody(body) {
                         }]
                     }
                     resolve(newBody);
-                    break;
-                case 'worklog_created':
+                } catch (err) {
+                    resolve("case project_created issue")
+                }
+                break;
+            case 'worklog_created':
+                try {
                     if (body.worklog.comment.length > 1000) {
                         comment = body.worklog.comment.substring(0, 1000) + "..."
                     } else {
@@ -229,8 +245,12 @@ function parseBody(body) {
                             console.log('Worklog_created getIssueInfo catch err: ', err)
                             reject(err)
                         })
-                    break;
-                default:
+                } catch (err) {
+                    resolve("case worklog_created issue")
+                }
+                break;
+            default:
+                try {
                     console.log('Body for unknow event: ', body)
                     newBody = {
                         "username": "Jira",
@@ -243,13 +263,11 @@ function parseBody(body) {
                         }]
                     }
                     resolve(newBody);
-            }
-        });
-    } catch (err) {
-        console.log('===============================')
-        console.log('parseBody Promise catch err: ', err)
-        reject(err)
-    }
+                } catch (err) {
+                    resolve("case unknown event issue")
+                }
+        }
+    });
 }
 
 app.get('/jira', function(req, res) {

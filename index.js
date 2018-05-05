@@ -71,6 +71,11 @@ async function parseBody(body) {
                                 "name": "Priorita:",
                                 "value": body.issue.fields.priority.name,
                                 "inline": true
+                            },
+                            {
+                                "name": "Stav:",
+                                "value": body.issue.fields.status.statusCategory.name,
+                                "inline": true
                             }
                         ]
                     }]
@@ -102,6 +107,11 @@ async function parseBody(body) {
                             {
                                 "name": "Priorita:",
                                 "value": body.issue.fields.priority.name,
+                                "inline": true
+                            },
+                            {
+                                "name": "Stav:",
+                                "value": body.issue.fields.status.statusCategory.name,
                                 "inline": true
                             }
                         ]
@@ -139,6 +149,11 @@ async function parseBody(body) {
                             {
                                 "name": "Priorita:",
                                 "value": body.issue.fields.priority.name,
+                                "inline": true
+                            },
+                            {
+                                "name": "Stav:",
+                                "value": body.issue.fields.status.statusCategory.name,
                                 "inline": true
                             },
                             {
@@ -204,6 +219,15 @@ async function parseBody(body) {
                                     "inline": true
                                 },
                                 {
+                                    "name": "Stav:",
+                                    "value": issueBody.fields.status.statusCategory.name,
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Vykázáno:",
+                                    "value": body.worklog.timeSpent
+                                },
+                                {
                                     "name": "Komentář:",
                                     "value": comment
                                 }
@@ -224,14 +248,17 @@ async function parseBody(body) {
                             "description": "**!! Neexistujíci OAuth access token !!** Authentifikujte se nejdřív pomocí [" + conf.jira_callback_url + "/jira](" + conf.jira_callback_url + "/jira)",
                             "color": 16249146,
                             "fields": [{
-                                "name": "Komentář:",
-                                "value": comment
-                            }]
+                                    "name": "Vykázáno:",
+                                    "value": body.worklog.timeSpent
+                                },
+                                {
+                                    "name": "Komentář:",
+                                    "value": comment
+                                }
+                            ]
                         }]
                     }
                 }
-                console.log('===============================')
-                console.log("return newBody: ", newBody)
                 return newBody;
             } catch (err) {
                 throw new Error("case worklog_created issue: " + err)
@@ -333,9 +360,6 @@ app.post('/', async function(req, res) {
             body: newBody,
             json: true
         };
-
-        console.log('===============================')
-        console.log('options: ', options)
 
         request(options, function(error, response, body) {
             if (error) {

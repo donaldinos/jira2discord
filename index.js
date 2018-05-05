@@ -30,7 +30,7 @@ function getIssueInfo(issueID) {
             function(error, data, resp) {
                 if (error) {
                     console.log('===============================')
-                    console.log('getIssueInfo Promise err: ', err)
+                    console.log('getIssueInfo Promise err: ', error)
                     reject(error);
                 } else {
                     resolve(JSON.parse(data));

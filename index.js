@@ -31,7 +31,11 @@ function getIssueInfo(issueID) {
                 if (error) {
                     console.log('===============================')
                     console.log('getIssueInfo Promise err: ', error)
-                    reject(error);
+                    if (error.statusCode == 404) {
+                        resolve(null)
+                    } else {
+                        reject(error);
+                    }
                 } else {
                     resolve(JSON.parse(data));
                 }
@@ -158,41 +162,63 @@ function parseBody(body) {
                     }
                     getIssueInfo(body.worklog.issueId)
                         .then(function(resolve) {
-                            let issueBody = resolve
-                            newBody = {
-                                "username": "Jira",
-                                "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                                "content": "Ticket byl aktualizován a byl nad ním vykázanej strávenej čas",
-                                "embeds": [{
-                                    "author": {
-                                        "name": body.worklog.author.displayName,
-                                        "icon_url": body.worklog.author.avatarUrls['48x48']
-                                    },
-                                    "title": issueBody.fields.issuetype.description,
-                                    "description": "[" + issueBody.key + ": " + issueBody.fields.summary + "](" + conf.jira_project_addr + '/browse/' + issueBody.key + ")",
-                                    "color": 16249146,
-                                    "fields": [{
-                                            "name": "Typ ticketu:",
-                                            "value": issueBody.fields.issuetype.name,
-                                            "inline": true
-                                        },
-                                        {
-                                            "name": "Priorita:",
-                                            "value": issueBody.fields.priority.name,
-                                            "inline": true
-                                        },
-                                        {
-                                            "name": "Komentář:",
-                                            "value": comment
-                                        }
-                                    ]
-                                }]
-                            }
-                        }, function(err) {
-                            console.log('===============================')
-                            console.log('Worklog_created getIssueInfo err: ', err)
-                            reject(err);
-                        })
+                                let issueBody = resolve
+                                if (issueBody !== null) {
+                                    newBody = {
+                                        "username": "Jira",
+                                        "avatar_url": "https://i.imgur.com/mdp3NY3.png",
+                                        "content": "Ticket byl aktualizován a byl nad ním vykázanej strávenej čas",
+                                        "embeds": [{
+                                            "author": {
+                                                "name": body.worklog.author.displayName,
+                                                "icon_url": body.worklog.author.avatarUrls['48x48']
+                                            },
+                                            "title": issueBody.fields.issuetype.description,
+                                            "description": "[" + issueBody.key + ": " + issueBody.fields.summary + "](" + conf.jira_project_addr + '/browse/' + issueBody.key + ")",
+                                            "color": 16249146,
+                                            "fields": [{
+                                                    "name": "Typ ticketu:",
+                                                    "value": issueBody.fields.issuetype.name,
+                                                    "inline": true
+                                                },
+                                                {
+                                                    "name": "Priorita:",
+                                                    "value": issueBody.fields.priority.name,
+                                                    "inline": true
+                                                },
+                                                {
+                                                    "name": "Komentář:",
+                                                    "value": comment
+                                                }
+                                            ]
+                                        }]
+                                    }
+                                } else {
+                                    newBody = {
+                                        "username": "Jira",
+                                        "avatar_url": "https://i.imgur.com/mdp3NY3.png",
+                                        "content": "Ticket byl aktualizován a byl nad ním vykázanej strávenej čas",
+                                        "embeds": [{
+                                            "author": {
+                                                "name": body.worklog.author.displayName,
+                                                "icon_url": body.worklog.author.avatarUrls['48x48']
+                                            },
+                                            "title": 'Neznámej tiket',
+                                            "description": "**!! Neexistujíci OAuth access token !!** Authentifikujte se nejdřív pomocí [" + conf.jira_callback_url + "/jira](" + conf.jira_callback_url + "/jira)",
+                                            "color": 16249146,
+                                            "fields": [{
+                                                "name": "Komentář:",
+                                                "value": comment
+                                            }]
+                                        }]
+                                    }
+                                }
+                            },
+                            function(err) {
+                                console.log('===============================')
+                                console.log('Worklog_created getIssueInfo err: ', err)
+                                reject(err);
+                            })
                         .catch(function(err) {
                             console.log('===============================')
                             console.log('Worklog_created getIssueInfo catch err: ', err)

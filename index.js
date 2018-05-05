@@ -230,8 +230,8 @@ app.use(session({ secret: 'red', saveUninitialized: true, resave: true }))
     })
 
 app.get('/jira', function(req, res) {
-    var oa = new OAuth(conf.jira_callback_url + "/plugins/servlet/oauth/request-token", //request token
-        conf.jira_callback_url + "/plugins/servlet/oauth/access-token", //access token
+    var oa = new OAuth(conf.jira_project_addr + "/plugins/servlet/oauth/request-token", //request token
+        conf.jira_project_addr + "/plugins/servlet/oauth/access-token", //access token
         conf.jira_consumer_key, //consumer key 
         fs.readFileSync('./jira.pem', 'utf8'), //consumer secret, eg. fs.readFileSync('jira.pem', 'utf8')
         '1.0', //OAuth version
@@ -245,7 +245,7 @@ app.get('/jira', function(req, res) {
             req.session.oa = oa;
             req.session.oauth_token = oauthToken;
             req.session.oauth_token_secret = oauthTokenSecret;
-            return res.redirect(conf.jira_callback_url + "/plugins/servlet/oauth/authorize?oauth_token=" + oauthToken);
+            return res.redirect(conf.jira_project_addr + "/plugins/servlet/oauth/authorize?oauth_token=" + oauthToken);
         }
     });
 });

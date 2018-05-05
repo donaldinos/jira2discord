@@ -1,4 +1,5 @@
 var express = require('express');
+var request = require('request')
 var conf = require("./config.js");
 var session = require('express-session');
 var bodyParser = require('body-parser');
@@ -273,27 +274,31 @@ app.get('/', function(req, res) {
 });
 
 app.post('/', function(req, res) {
-    parseBody(req.body)
-        .then(function(newBody) {
-            var options = {
-                method: 'POST',
-                url: conf.discord_channel_addr,
-                headers: { 'Content-Type': 'application/json' },
-                body: newBody,
-                json: true
-            };
+    try {
+        parseBody(req.body)
+            .then(function(newBody) {
+                var options = {
+                    method: 'POST',
+                    url: conf.discord_channel_addr,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: newBody,
+                    json: true
+                };
 
-            request(options, function(error, response, body) {
-                if (error) throw new Error(error);
-                console.log(body);
-            });
-        }, function(err) {
-            console.log(err)
-            reject(err)
-        }).catch(function(err) {
-            console.log(err)
-            reject(err)
-        })
+                request(options, function(error, response, body) {
+                    if (error) throw new Error(error);
+                    console.log(body);
+                });
+            }, function(err) {
+                console.log(err)
+                reject(err)
+            }).catch(function(err) {
+                console.log(err)
+                reject(err)
+            })
+    } catch (err) {
+        console.log(err)
+    }
 })
 
 app.listen(80, function() {

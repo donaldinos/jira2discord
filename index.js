@@ -43,7 +43,7 @@ function getIssueInfo(issueID) {
     });
 }
 
-function parseBody(body) {
+async function parseBody(body) {
     let newBody
     let comment
 
@@ -179,63 +179,58 @@ function parseBody(body) {
                 } else {
                     comment = body.worklog.comment
                 }
-                getIssueInfo(body.worklog.issueId)
-                    .then(function(resolve) {
-                        let issueBody = resolve
-                        if (issueBody !== null) {
-                            newBody = {
-                                "username": "Jira",
-                                "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                                "content": "Ticket byl aktualizován a byl nad ním vykázanej strávenej čas",
-                                "embeds": [{
-                                    "author": {
-                                        "name": body.worklog.author.displayName,
-                                        "icon_url": body.worklog.author.avatarUrls['48x48']
-                                    },
-                                    "title": issueBody.fields.issuetype.description,
-                                    "description": "[" + issueBody.key + ": " + issueBody.fields.summary + "](" + conf.jira_project_addr + '/browse/' + issueBody.key + ")",
-                                    "color": 16249146,
-                                    "fields": [{
-                                            "name": "Typ ticketu:",
-                                            "value": issueBody.fields.issuetype.name,
-                                            "inline": true
-                                        },
-                                        {
-                                            "name": "Priorita:",
-                                            "value": issueBody.fields.priority.name,
-                                            "inline": true
-                                        },
-                                        {
-                                            "name": "Komentář:",
-                                            "value": comment
-                                        }
-                                    ]
-                                }]
-                            }
-                        } else {
-                            newBody = {
-                                "username": "Jira",
-                                "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                                "content": "Ticket byl aktualizován a byl nad ním vykázanej strávenej čas",
-                                "embeds": [{
-                                    "author": {
-                                        "name": body.worklog.author.displayName,
-                                        "icon_url": body.worklog.author.avatarUrls['48x48']
-                                    },
-                                    "title": 'Neznámej tiket',
-                                    "description": "**!! Neexistujíci OAuth access token !!** Authentifikujte se nejdřív pomocí [" + conf.jira_callback_url + "/jira](" + conf.jira_callback_url + "/jira)",
-                                    "color": 16249146,
-                                    "fields": [{
-                                        "name": "Komentář:",
-                                        "value": comment
-                                    }]
-                                }]
-                            }
-                        }
-                        return newBody;
-                    }, function(err) {
-                        throw new Error('Worklog_created getIssueInfo err: ' + err)
-                    })
+                issueBody = await getIssueInfo(body.worklog.issueId);
+                if (issueBody !== null) {
+                    newBody = {
+                        "username": "Jira",
+                        "avatar_url": "https://i.imgur.com/mdp3NY3.png",
+                        "content": "Ticket byl aktualizován a byl nad ním vykázanej strávenej čas",
+                        "embeds": [{
+                            "author": {
+                                "name": body.worklog.author.displayName,
+                                "icon_url": body.worklog.author.avatarUrls['48x48']
+                            },
+                            "title": issueBody.fields.issuetype.description,
+                            "description": "[" + issueBody.key + ": " + issueBody.fields.summary + "](" + conf.jira_project_addr + '/browse/' + issueBody.key + ")",
+                            "color": 16249146,
+                            "fields": [{
+                                    "name": "Typ ticketu:",
+                                    "value": issueBody.fields.issuetype.name,
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Priorita:",
+                                    "value": issueBody.fields.priority.name,
+                                    "inline": true
+                                },
+                                {
+                                    "name": "Komentář:",
+                                    "value": comment
+                                }
+                            ]
+                        }]
+                    }
+                } else {
+                    newBody = {
+                        "username": "Jira",
+                        "avatar_url": "https://i.imgur.com/mdp3NY3.png",
+                        "content": "Ticket byl aktualizován a byl nad ním vykázanej strávenej čas",
+                        "embeds": [{
+                            "author": {
+                                "name": body.worklog.author.displayName,
+                                "icon_url": body.worklog.author.avatarUrls['48x48']
+                            },
+                            "title": 'Neznámej tiket',
+                            "description": "**!! Neexistujíci OAuth access token !!** Authentifikujte se nejdřív pomocí [" + conf.jira_callback_url + "/jira](" + conf.jira_callback_url + "/jira)",
+                            "color": 16249146,
+                            "fields": [{
+                                "name": "Komentář:",
+                                "value": comment
+                            }]
+                        }]
+                    }
+                }
+                return newBody;
             } catch (err) {
                 throw new Error("case worklog_created issue: " + err)
             }

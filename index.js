@@ -207,7 +207,7 @@ async function parseBody(body) {
                             },
                             "title": issueBody.fields.issuetype.description,
                             "description": "[" + issueBody.key + ": " + issueBody.fields.summary + "](" + conf.jira_project_addr + '/browse/' + issueBody.key + ")",
-                            "color": 16249146,
+                            "color": 3838199,
                             "fields": [{
                                     "name": "Typ ticketu:",
                                     "value": issueBody.fields.issuetype.name,
@@ -246,7 +246,7 @@ async function parseBody(body) {
                             },
                             "title": 'Neznámej tiket',
                             "description": "**!! Neexistujíci OAuth access token !!** Authentifikujte se nejdřív pomocí [" + conf.jira_callback_url + "/jira](" + conf.jira_callback_url + "/jira)",
-                            "color": 16249146,
+                            "color": 3838199,
                             "fields": [{
                                     "name": "Vykázáno:",
                                     "value": body.worklog.timeSpent

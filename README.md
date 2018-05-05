@@ -3,10 +3,12 @@ This is custom proxy for Webhooks messages from JIRA to Discord Chat
 
 # Play with colors
 Colors: https://htmlcolorcodes.com/color-picker/
+
 Convertor HEX to DECIMAL: https://www.binaryhexconverter.com/hex-to-decimal-converter
 
 # Call REST API request over OAuth authentification
 There is link to create OAuth authentification to JIRA for get additional information about issues with REST API request https://developer.atlassian.com/cloud/jira/platform/jira-rest-api-oauth-authentication/
+
 This is solution for NodeJS https://devup.co/jira-rest-api-oauth-authentication-in-node-js-2f8d226a493a
 
 # Fix issue with OAuth module

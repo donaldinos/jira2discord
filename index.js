@@ -169,16 +169,16 @@ function parseBody(body) {
                                         "icon_url": body.worklog.author.avatarUrls['48x48']
                                     },
                                     "title": issueBody.fields.issuetype.description,
-                                    "description": "[" + issueBody.issue.key + ": " + issueBody.issue.fields.summary + "](" + conf.jira_project_addr + '/browse/' + issueBody.issue.key + ")",
+                                    "description": "[" + issueBody.key + ": " + issueBody.fields.summary + "](" + conf.jira_project_addr + '/browse/' + issueBody.key + ")",
                                     "color": 16249146,
                                     "fields": [{
                                             "name": "Typ ticketu:",
-                                            "value": issueBody.issue.fields.issuetype.name,
+                                            "value": issueBody.fields.issuetype.name,
                                             "inline": true
                                         },
                                         {
                                             "name": "Priorita:",
-                                            "value": issueBody.issue.fields.priority.name,
+                                            "value": issueBody.fields.priority.name,
                                             "inline": true
                                         },
                                         {

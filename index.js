@@ -243,10 +243,10 @@ function parseBody(body) {
                         .catch(function(err) {
                             console.log('===============================')
                             console.log('Worklog_created getIssueInfo catch err: ', err)
-                            reject(err)
+                            throw new Error(err);
                         })
                 } catch (err) {
-                    resolve("case worklog_created issue")
+                    throw new Error("case worklog_created issue: " + err)
                 }
                 break;
             default:
@@ -363,7 +363,7 @@ app.post('/', function(req, res) {
             }).catch(function(err) {
                 console.log('===============================')
                 console.log('2. Parse body err: ', err)
-                reject(err)
+                throw new Error(err)
             })
     } catch (err) {
         console.log(err)

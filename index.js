@@ -7,6 +7,10 @@ var fs = require('fs');
 var oauthToken, tokenSecret;
 var app = express();
 
+app.use(session({ secret: 'red', saveUninitialized: true, resave: true }));
+app.use(bodyParser.json()); //json parser
+app.use(bodyParser.urlencoded({ extended: true })); //urlencoded parser
+
 function getIssueInfo(issueID) {
     var issue = new OAuth(
         conf.jira_project_addr + "/plugins/servlet/oauth/request-token",
@@ -286,10 +290,6 @@ app.post('/', function(req, res) {
         console.log(err)
     })
 })
-
-app.use(session({ secret: 'red', saveUninitialized: true, resave: true }));
-app.use(bodyParser.json()); //json parser
-app.use(bodyParser.urlencoded({ extended: true })); //urlencoded parser
 
 app.listen(80, function() {
     console.log('Transfer JIRA 2 DISCORD listen 80');

@@ -230,6 +230,8 @@ async function parseBody(body) {
                         }]
                     }
                 }
+                console.log('===============================')
+                console.log("return newBody: ", newBody)
                 return newBody;
             } catch (err) {
                 throw new Error("case worklog_created issue: " + err)
@@ -321,10 +323,9 @@ app.get('/', function(req, res) {
     res.send("This is JIRA 2 DISCORD plugin. For get accesstoken call firt <YOUR_URL>/jira !");
 });
 
-app.post('/', function(req, res) {
+app.post('/', async function(req, res) {
     try {
-        var newBody = parseBody(req.body);
-
+        var newBody = await parseBody(req.body)
         var options = {
             method: 'POST',
             url: conf.discord_channel_addr,
@@ -332,6 +333,9 @@ app.post('/', function(req, res) {
             body: newBody,
             json: true
         };
+
+        console.log('===============================')
+        console.log('options: ', options)
 
         request(options, function(error, response, body) {
             if (error) {

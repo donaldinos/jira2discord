@@ -205,30 +205,6 @@ function parseBody(body) {
     });
 }
 
-app.use(session({ secret: 'red', saveUninitialized: true, resave: true }))
-    .use(bodyParser.json()) //json parser
-    .use(bodyParser.urlencoded({ extended: true })) //urlencoded parser
-    .use(function(req, res) {
-        if (req.method == "POST") {
-            parseBody(req.body).then(function(newBody) {
-                var options = {
-                    method: 'POST',
-                    url: conf.discord_channel_addr,
-                    headers: { 'Content-Type': 'application/json' },
-                    body: newBody,
-                    json: true
-                };
-
-                request(options, function(error, response, body) {
-                    if (error) throw new Error(error);
-                    console.log(body);
-                });
-            }, function(err) {
-                console.log(err)
-            })
-        }
-    })
-
 app.get('/jira', function(req, res) {
     var oa = new OAuth(conf.jira_project_addr + "/plugins/servlet/oauth/request-token", //request token
         conf.jira_project_addr + "/plugins/servlet/oauth/access-token", //access token
@@ -291,6 +267,29 @@ app.get('/jira/callback', function(req, res) {
 app.get('/', function(req, res) {
     res.send("This is JIRA 2 DISCORD plugin. For get accesstoken call firt <YOUR_URL>/jira !");
 });
+
+app.post('/', function(req, res) {
+    parseBody(req.body).then(function(newBody) {
+        var options = {
+            method: 'POST',
+            url: conf.discord_channel_addr,
+            headers: { 'Content-Type': 'application/json' },
+            body: newBody,
+            json: true
+        };
+
+        request(options, function(error, response, body) {
+            if (error) throw new Error(error);
+            console.log(body);
+        });
+    }, function(err) {
+        console.log(err)
+    })
+})
+
+app.use(session({ secret: 'red', saveUninitialized: true, resave: true }));
+app.use(bodyParser.json()); //json parser
+app.use(bodyParser.urlencoded({ extended: true })); //urlencoded parser
 
 app.listen(80, function() {
     console.log('Transfer JIRA 2 DISCORD listen 80');

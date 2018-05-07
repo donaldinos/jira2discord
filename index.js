@@ -361,7 +361,7 @@ app.get('/', function(req, res) {
 
 app.post('/', async function(req, res) {
     try {
-        if (typeof req.headers["user-agent"] !== "undefined" && typeof body['webhookEvent'] !== "undefined") {
+        if (typeof req.headers["user-agent"] !== "undefined" && typeof req.body['webhookEvent'] !== "undefined") {
             if (req.headers["user-agent"].indexOf("Atlassian") > -1 && req.headers["user-agent"].indexOf("JIRA")) {
                 var newBody = await parseBody(req.body)
                 var options = {

@@ -319,7 +319,7 @@ app.get('/jira/callback', function(req, res) {
         req.session.oa._version,
         req.session.oa._authorize_callback,
         req.session.oa._signatureMethod);
-    console.log(oa);
+    // console.log(oa);
 
     oa.getOAuthAccessToken(
         req.session.oauth_token,
@@ -352,23 +352,37 @@ app.get('/', function(req, res) {
 
 app.post('/', async function(req, res) {
     try {
-        var newBody = await parseBody(req.body)
-        var options = {
-            method: 'POST',
-            url: conf.discord_channel_addr,
-            headers: { 'Content-Type': 'application/json' },
-            body: newBody,
-            json: true
-        };
+        if (typeof req.headers["user-agent"] !== "undefined") {
+            if (req.headers["user-agent"].indexOf("Atlassian") > -1 && req.headers["user-agent"].indexOf("JIRA")) {
+                var newBody = await parseBody(req.body)
+                var options = {
+                    method: 'POST',
+                    url: conf.discord_channel_addr,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: newBody,
+                    json: true
+                };
 
-        request(options, function(error, response, body) {
-            if (error) {
-                console.log('===============================')
-                console.log('Request err: ', error)
-                throw new Error(error);
+                request(options, function(error, response, body) {
+                    if (error) {
+                        console.log('===============================')
+                        console.log('Request err: ', error)
+                        throw new Error(error);
+                    }
+                    // console.log(body);
+                })
+            } else {
+                console.log("===================================")
+                console.log("Header: ", JSON.stringify(req.headers))
+                console.log("SPAM IP: ", req.headers['x-forwarded-for'] || req.connection.remoteAddress)
+                res.send("Don't play with me");
             }
-            // console.log(body);
-        })
+        } else {
+            console.log("===================================")
+            console.log("Header: ", JSON.stringify(req.headers))
+            console.log("SPAM IP: ", req.headers['x-forwarded-for'] || req.connection.remoteAddress)
+            res.send("Don't play with me");
+        }
     } catch (err) {
         console.log("===================================")
         console.log(err)

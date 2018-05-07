@@ -245,7 +245,8 @@ async function parseBody(body) {
                                 "icon_url": body.worklog.author.avatarUrls['48x48']
                             },
                             "title": 'Neznámej tiket',
-                            "description": "**!! Neexistujíci OAuth access token !!** Authentifikujte se nejdřív pomocí [" + conf.jira_callback_url + "/jira](" + conf.jira_callback_url + "/jira)",
+                            "description": "**!! Neexistujíci OAuth access token !!** Authentifikujte se nejdřív pomocí [" + conf.jira_callback_url + "/jira](" + conf.jira_callback_url + "/jira) " +
+                                "JSON formát zprávy nájdete na tomhle [odkazu](" + conf.jira_project_addr + "/rest/api/2/issue/" + body.worklog.issueId + ")",
                             "color": 3838199,
                             "fields": [{
                                     "name": "Vykázáno:",
@@ -266,14 +267,22 @@ async function parseBody(body) {
             break;
         default:
             try {
+                var desc
+                console.log('===============================')
                 console.log('Body for unknow event: ', body)
+                if (typeof body["issue"] !== "undefined") {
+                    issueBody = await getIssueInfo(body.worklog.issueId);
+                    desc = "[" + issueBody.key + ": " + issueBody.fields.summary + "](" + conf.jira_project_addr + '/browse/' + issueBody.key + ")";
+                } else {
+                    desc = "**!! Neznámy formát zprávy !!**"
+                }
+
                 newBody = {
                     "username": "Jira",
                     "avatar_url": "https://i.imgur.com/mdp3NY3.png",
                     "content": "!! Neošetřen stav: " + body.webhookEvent,
                     "embeds": [{
-                        // "title": body.issue.fields.description,
-                        // "description": "[" + body.issue.key + ": " + body.issue.fields.summary + "]",
+                        "description": desc,
                         "color": 15258703
                     }]
                 }
@@ -352,7 +361,7 @@ app.get('/', function(req, res) {
 
 app.post('/', async function(req, res) {
     try {
-        if (typeof req.headers["user-agent"] !== "undefined") {
+        if (typeof req.headers["user-agent"] !== "undefined" && typeof body['webhookEvent'] !== "undefined") {
             if (req.headers["user-agent"].indexOf("Atlassian") > -1 && req.headers["user-agent"].indexOf("JIRA")) {
                 var newBody = await parseBody(req.body)
                 var options = {
@@ -375,12 +384,14 @@ app.post('/', async function(req, res) {
                 console.log("===================================")
                 console.log("Header: ", JSON.stringify(req.headers))
                 console.log("SPAM IP: ", req.headers['x-forwarded-for'] || req.connection.remoteAddress)
+                console.log("Body: ", req.body)
                 res.send("Don't play with me");
             }
         } else {
             console.log("===================================")
             console.log("Header: ", JSON.stringify(req.headers))
             console.log("SPAM IP: ", req.headers['x-forwarded-for'] || req.connection.remoteAddress)
+            console.log("Body: ", req.body)
             res.send("Don't play with me");
         }
     } catch (err) {

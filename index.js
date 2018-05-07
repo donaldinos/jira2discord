@@ -346,8 +346,8 @@ app.get('/jira/callback', function(req, res) {
 
                 res.send({
                     message: "successfully authenticated.",
-                    access_token: oauth_access_token,
-                    secret: oauth_access_token_secret
+                    // access_token: oauth_access_token,
+                    // secret: oauth_access_token_secret
                 });
                 oauthToken = oauth_access_token;
                 tokenSecret = oauth_access_token_secret;

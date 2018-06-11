@@ -363,7 +363,14 @@ app.post('/', async function(req, res) {
     try {
         if (typeof req.headers["user-agent"] !== "undefined" && typeof req.body['webhookEvent'] !== "undefined") {
             if (req.headers["user-agent"].indexOf("Atlassian") > -1 && req.headers["user-agent"].indexOf("JIRA")) {
+                console.log('===============================')
+                console.log('Body original: ', req.body)
+
                 var newBody = await parseBody(req.body)
+
+                console.log('===============================')
+                console.log('New Body: ', newBody)
+
                 var options = {
                     method: 'POST',
                     url: conf.discord_channel_addr,

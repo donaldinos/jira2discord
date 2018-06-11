@@ -53,7 +53,7 @@ async function parseBody(body) {
                 newBody = {
                     "username": "Jira",
                     "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                    "content": "Ticket byl vytvořen",
+                    "content": "Ticket byl vytvořený",
                     "embeds": [{
                         "author": {
                             "name": body.user.displayName,
@@ -90,7 +90,7 @@ async function parseBody(body) {
                 newBody = {
                     "username": "Jira",
                     "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                    "content": "Ticket byl aktualizován",
+                    "content": "Ticket byl aktualizovaný",
                     "embeds": [{
                         "author": {
                             "name": body.user.displayName,
@@ -132,7 +132,7 @@ async function parseBody(body) {
                 newBody = {
                     "username": "Jira",
                     "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                    "content": "Ticket byl komentován",
+                    "content": "Ticket byl okomentovaný",
                     "embeds": [{
                         "author": {
                             "name": body.comment.author.displayName,
@@ -173,7 +173,7 @@ async function parseBody(body) {
                 newBody = {
                     "username": "Jira",
                     "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                    "content": "Projekt byl vytvořen",
+                    "content": "Projekt byl vytvořený",
                     "embeds": [{
                         "author": {
                             "name": body.project.projectLead.name,
@@ -199,7 +199,7 @@ async function parseBody(body) {
                     newBody = {
                         "username": "Jira",
                         "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                        "content": "Ticket byl aktualizován a byl nad ním vykázanej strávenej čas",
+                        "content": "Ticket byl aktualizovaný a byl nad ním vykázaný strávený čas",
                         "embeds": [{
                             "author": {
                                 "name": body.worklog.author.displayName,
@@ -238,7 +238,7 @@ async function parseBody(body) {
                     newBody = {
                         "username": "Jira",
                         "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                        "content": "Ticket byl aktualizován a byl nad ním vykázanej strávenej čas",
+                        "content": "Ticket byl aktualizovaný a byl nad ním vykázaný strávený čas",
                         "embeds": [{
                             "author": {
                                 "name": body.worklog.author.displayName,
@@ -246,7 +246,7 @@ async function parseBody(body) {
                             },
                             "title": 'Neznámej tiket',
                             "description": "**!! Neexistujíci OAuth access token !!** Authentifikujte se nejdřív pomocí [" + conf.jira_callback_url + "/jira](" + conf.jira_callback_url + "/jira) " +
-                                "JSON formát zprávy nájdete na tomhle [odkazu](" + conf.jira_project_addr + "/rest/api/2/issue/" + body.worklog.issueId + ")",
+                                "JSON formát zprávy nájdete na tomto [odkazu](" + conf.jira_project_addr + "/rest/api/2/issue/" + body.worklog.issueId + ")",
                             "color": 3838199,
                             "fields": [{
                                     "name": "Vykázáno:",
@@ -280,7 +280,7 @@ async function parseBody(body) {
                 newBody = {
                     "username": "Jira",
                     "avatar_url": "https://i.imgur.com/mdp3NY3.png",
-                    "content": "!! Neošetřen stav: " + body.webhookEvent,
+                    "content": "!! Neošetřený stav: " + body.webhookEvent,
                     "embeds": [{
                         "description": desc,
                         "color": 15258703
